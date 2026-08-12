@@ -2,40 +2,223 @@
 title: "Hardware-agnostic linear programming on the GPU"
 author: "Guillaume Dalle, Michael Klamkin, Simeon Schaub"
 date: "2026/08/13"
-format: revealjs
+format:
+  revealjs:
+    width: 1280
+    height: 720
+    slide-number: true
+    echo: true
 engine: julia
+bibliography: CoolPDLP.bib
 ---
 
 # Motivation
 
+## Breakfast optimization
+
+A bakery can produce _croissants_ (1€) or _pains au chocolat_ (1.5€):
+
+| | Butter | Sugar | Flour |
+|---|---|---|---|---|
+| Croissant | 35g | 20g | 15g |
+| Pain au chocolat | 25g | 30g | 20g |
+
+The ingredients have unit costs and supply limits:
+
+| | Butter | Sugar | Flour |
+|---|---|---|---|
+| Unit cost | 2€/kg | 1€/kg | 0.5€/kg |
+| Max supply | 20kg | 100kg | 200kg |
+
+How much of each should they bake to maximize profits?
+
+## Mathematical formulation
+
+:::: {.columns}
+
+::: {.column width="40%"}
+- Decision variables:
+  - Quantities $c, p$
+  - Ingredient weights $b, s, f$
+- Objective:
+  - Revenue
+  - Cost
+- Constraints:
+  - Max supply
+  - Ingredients
+:::
+
+::: {.column width="60%"}
+$$
+\begin{align*}
+\max_{c, p, b, s, f} \quad & +(1c + 1.5p) \\
+\phantom{\max_{c, p, b, s, f}} & - (2b + 1s + 0.5f) \\
+\text{s.t.} \quad & 0 \leq c, p \\
+& 0 \leq b \leq 20 \\
+& 0 \leq s \leq 100 \\
+\phantom{\max_{c, p, b, s, f}} & 0 \leq f \leq 200 \\
+& 35c + 25p = b/1000 \\
+& 20c + 30p = s/1000 \\
+& 15c + 20p = f/1000
+\end{align*}
+$$
+:::
+
+::::
+
 ## Linear programming
 
-## Parallelization opportunities
+Optimize a linear objective subject to affine constraints:
 
-## Parallelization challenges
+$$\text{minimize} \quad c^\top x \quad \text{subject to} \quad A x \leq b$$
+
+More useful than it seems:
+
+- For convex problems (subroutine of Frank-Wolfe)
+- For integer problems (subroutine of Branch & Bound)
+
+## Parallelization opportunities & challenges
+
+:::: {.columns}
+
+::: {.column width="40%"}
+**Why parallelize?**
+
+- Because we have GPUs!
+- To solve large instances
+- To solve several instances
+:::
+
+::: {.column width="60%"}
+**Why not parallelize?**
+
+- Best CPU solvers: simplex & interior points
+- Sequential++ (sparse matrix factorizations)
+- Applications require high precision
+:::
+
+::::
+
+Visualization with [lpviz.net](https://lpviz.net/)  by [@grandLpvizInteractiveLinear2026].
 
 ## Primal-dual algorithms
 
+GPUs are best leveraged with first-order methods [@luOverviewGPUbasedFirstOrder2025]:
+
+- Same intuition as deep learning: gradient only
+- Core primitive: sparse matrix-vector product (SpMV)
+- Recent proof of concept... coded in Julia [@luCuPDLPjlGPUImplementation2025]
+
 # CoolPDLP design
 
-## Existing packages
+## State of the art
 
-## Hardware-agnostic
+| Package | Hardware | Type-generic | Batchable |
+| --- | --- | --- | --- |
+| [`cuPDLPx`](https://github.com/MIT-Lu-Lab/cuPDLPx) | NVIDIA, AMD | No | No |
+| [`HPR-LP-C`](https://github.com/PolyU-IOR/HPR-LP-C) | NVIDIA | No | No |
+| [`HiGHS`](https://github.com/ERGO-Code/HiGHS) | NVIDIA | No | No |
+| [`cuopt`](https://github.com/NVIDIA/cuopt) | NVIDIA | No | Yes |
+| [`MPAX`](https://github.com/MIT-Lu-Lab/MPAX) | agnostic (via `JAX`) | No | Yes |
+| [`BatchPDLP.jl`](https://github.com/PSORLab/BatchPDLP.jl) | NVIDIA | No | Yes |
+| [`CoolPDLP.jl`](https://github.com/JuliaDecisionFocusedLearning/CoolPDLP.jl) | Any | Yes | Yes |
 
-## Matrix-agnostic
+## `CoolPDLP.jl` is hardware-agnostic
 
-# Live demo
+- Coded with [`GPUArrays.jl`](https://github.com/JuliaGPU/GPUArrays.jl) and [`KernelAbstractions.jl`](https://github.com/JuliaGPU/KernelAbstractions.jl).
+- Runs on any GPU or CPU.
+- Can use optimized linear algebra with e.g. `cuSPARSE`
+
+## `CoolPDLP.jl` is type-generic
+
+- The constraint matrix $A$ in $Ax \leq b$ is arbitrary
+  - Dense
+  - Sparse
+  - Structured (!!!)
+- The floating point precision is arbitrary
+  - `Float32`
+  - `Float64`
+  - exotic types
+
+## `CoolPDLP.jl` is batchable
+
+Solves a bunch of problems in lockstep:
+
+$$\text{minimize} \quad [c_1, ..., c_B]^\top x \quad \text{subject to} \quad A x \leq [b_1, ..., b_B]$$
+
+The core primitive becomes sparse matrix-matrix product (SpMM).
+
+# Package demo
+
+## Imports
+
+```{julia}
+using CoolPDLP
+using HiGHS: HiGHS
+using JLArrays
+using JuMP
+using MathOptBenchmarkInstances: Netlib, list_instances, read_instance
+```
 
 ## Setting up a problem
 
 ```{julia}
-using CoolPDLP
+dataset = Netlib
+name = list_instances(dataset)[1]
+qps, path = read_instance(dataset, name)
+milp = MILP(qps; dataset, name, path)
 ```
 
 ## Solving on the CPU
 
+```{julia}
+algo = PDLP(;
+    termination_reltol = 1.0e-4,
+    time_limit = 30.0
+)
+solve(milp, algo)  # compile
+sol, stats = solve(milp, algo)
+stats
+```
+
 ## Solving on the GPU
+
+```{julia}
+algo_gpu = PDLP(
+    Float64, Int64,
+    GPUSparseMatrixCSR;  # replace with e.g. CuSparseMatrixCSR
+    backend=JLBackend(),  # replace with e.g. CUDABackend()
+    termination_reltol=1.0f-4,
+    time_limit=30.0,
+)
+solve(milp, algo_gpu)  # compile
+sol_gpu, stats_gpu = solve(milp, algo_gpu)
+stats_gpu
+```
 
 ## JuMP interface
 
-## Batched mode
+```{julia}
+model = JuMP.read_from_file(path; format=MOI.FileFormats.FORMAT_MPS)
+JuMP.set_optimizer(model, CoolPDLP.Optimizer)
+JuMP.set_silent(model)
+JuMP.set_attribute(model, "matrix_type", GPUSparseMatrixCSR)
+JuMP.set_attribute(model, "backend", JLBackend())
+JuMP.set_attribute(model, "termination_reltol", 1.0e-4)
+JuMP.set_attribute(model, "time_limit", 30.0)
+JuMP.optimize!(model)
+```
+
+# Conclusion
+
+## Perspectives
+
+- More functionalities: presolving, feasibility, polishing, infeasibility detection, crossover
+- Kernel fusion with [`Reactant.jl`](https://github.com/EnzymeAD/Reactant.jl)
+- Extension to nonlinear problems (quadratic first)
+- Applications to decision-focused learning [@mandiDecisionFocusedLearningFoundations2024]
+
+## References
+
+::: {#refs}
+:::
