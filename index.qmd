@@ -1,6 +1,41 @@
 ---
 title: "Hardware-agnostic linear programming on the GPU"
 author: "Guillaume Dalle, Michael Klamkin, Simeon Schaub"
+date: "2026/08/13"
 format: revealjs
+engine: julia
 ---
 
+# Motivation
+
+## Linear programming
+
+## Parallelization opportunities
+
+## Parallelization challenges
+
+## Primal-dual algorithms
+
+# CoolPDLP design
+
+## Existing packages
+
+## Hardware-agnostic
+
+## Matrix-agnostic
+
+# Live demo
+
+## Setting up a problem
+
+```{julia}
+using CoolPDLP
+```
+
+## Solving on the CPU
+
+## Solving on the GPU
+
+## JuMP interface
+
+## Batched mode

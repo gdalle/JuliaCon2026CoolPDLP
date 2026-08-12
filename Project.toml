@@ -1,0 +1,8 @@
+[deps]
+Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
+CoolPDLP = "9e90bdc5-3073-4e0f-a275-e19f28ac1b53"
+JLArrays = "27aeb0d3-9eb9-45fb-866b-73c2ecf80fcb"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+KernelAbstractions = "63c18a36-062a-441e-b654-da1e3ab1ce7c"
+MathOptBenchmarkInstances = "f7f8d0a1-fd34-491e-a7ac-a4cf52f91fe5"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
