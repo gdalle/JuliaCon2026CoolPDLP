@@ -35,7 +35,92 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-  </style>
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
   <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-2740581606dc327e82f18f789b69d8a0.css">
   <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
@@ -151,61 +236,366 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <h1>Motivation</h1>
 
 </section>
+<section id="breakfast-optimization" class="slide level2">
+<h2>Breakfast optimization</h2>
+<p>A bakery can produce <em>croissants</em> (1€) or <em>pains au chocolat</em> (1.5€):</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>Butter</th>
+<th>Sugar</th>
+<th>Flour</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Croissant</td>
+<td>35g</td>
+<td>20g</td>
+<td>15g</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Pain au chocolat</td>
+<td>25g</td>
+<td>30g</td>
+<td>20g</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The ingredients have unit costs and supply limits:</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th>Butter</th>
+<th>Sugar</th>
+<th>Flour</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Unit cost</td>
+<td>2€/kg</td>
+<td>1€/kg</td>
+<td>0.5€/kg</td>
+</tr>
+<tr class="even">
+<td>Max supply</td>
+<td>20kg</td>
+<td>100kg</td>
+<td>200kg</td>
+</tr>
+</tbody>
+</table>
+<p>How much of each should they bake to maximize profits?</p>
+</section>
+<section id="mathematical-formulation" class="slide level2">
+<h2>Mathematical formulation</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<ul>
+<li>Decision variables:
+<ul>
+<li>Quantities <span class="math inline">\(c, p\)</span></li>
+<li>Ingredient weights <span class="math inline">\(b, s, f\)</span></li>
+</ul></li>
+<li>Objective:
+<ul>
+<li>Revenue</li>
+<li>Cost</li>
+</ul></li>
+<li>Constraints:
+<ul>
+<li>Max supply</li>
+<li>Ingredients</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:60%;">
+<p><span class="math display">\[
+\begin{align*}
+\max_{c, p, b, s, f} \quad &amp; +(1c + 1.5p) \\
+\phantom{\max_{c, p, b, s, f}} &amp; - (2b + 1s + 0.5f) \\
+\text{s.t.} \quad &amp; 0 \leq c, p \\
+&amp; 0 \leq b \leq 20 \\
+&amp; 0 \leq s \leq 100 \\
+\phantom{\max_{c, p, b, s, f}} &amp; 0 \leq f \leq 200 \\
+&amp; 35c + 25p = b/1000 \\
+&amp; 20c + 30p = s/1000 \\
+&amp; 15c + 20p = f/1000
+\end{align*}
+\]</span></p>
+</div></div>
+</section>
 <section id="linear-programming" class="slide level2">
 <h2>Linear programming</h2>
+<p>Optimize a linear objective subject to affine constraints:</p>
+<p><span class="math display">\[\text{minimize} \quad c^\top x \quad \text{subject to} \quad A x \leq b\]</span></p>
+<p>More useful than it seems:</p>
+<ul>
+<li>For convex problems (subroutine of Frank-Wolfe)</li>
+<li>For integer problems (subroutine of Branch &amp; Bound)</li>
+</ul>
 </section>
-<section id="parallelization-opportunities" class="slide level2">
-<h2>Parallelization opportunities</h2>
-</section>
-<section id="parallelization-challenges" class="slide level2">
-<h2>Parallelization challenges</h2>
+<section id="parallelization-opportunities-challenges" class="slide level2">
+<h2>Parallelization opportunities &amp; challenges</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><strong>Why parallelize?</strong></p>
+<ul>
+<li>Because we have GPUs!</li>
+<li>To solve large instances</li>
+<li>To solve several instances</li>
+</ul>
+</div><div class="column" style="width:60%;">
+<p><strong>Why not parallelize?</strong></p>
+<ul>
+<li>Best CPU solvers: simplex &amp; interior points</li>
+<li>Sequential++ (sparse matrix factorizations)</li>
+<li>Applications require high precision</li>
+</ul>
+</div></div>
+<p>Visualization with <a href="https://lpviz.net/">lpviz.net</a> by <span class="citation" data-cites="grandLpvizInteractiveLinear2026">(<a href="#/references" role="doc-biblioref" onclick="">Grand and Klamkin 2026</a>)</span>.</p>
 </section>
 <section id="primal-dual-algorithms" class="slide level2">
 <h2>Primal-dual algorithms</h2>
+<p>GPUs are best leveraged with first-order methods <span class="citation" data-cites="luOverviewGPUbasedFirstOrder2025">(<a href="#/references" role="doc-biblioref" onclick="">Lu and Yang 2025a</a>)</span>:</p>
+<ul>
+<li>Same intuition as deep learning: gradient only</li>
+<li>Core primitive: sparse matrix-vector product (SpMV)</li>
+<li>Recent proof of concept… coded in Julia <span class="citation" data-cites="luCuPDLPjlGPUImplementation2025">(<a href="#/references" role="doc-biblioref" onclick="">Lu and Yang 2025b</a>)</span></li>
+</ul>
 </section></section>
 <section>
 <section id="coolpdlp-design" class="title-slide slide level1 center">
 <h1>CoolPDLP design</h1>
 
 </section>
-<section id="existing-packages" class="slide level2">
-<h2>Existing packages</h2>
+<section id="state-of-the-art" class="slide level2">
+<h2>State of the art</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Hardware</th>
+<th>Type-generic</th>
+<th>Batchable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://github.com/MIT-Lu-Lab/cuPDLPx"><code>cuPDLPx</code></a></td>
+<td>NVIDIA, AMD</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/PolyU-IOR/HPR-LP-C"><code>HPR-LP-C</code></a></td>
+<td>NVIDIA</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/ERGO-Code/HiGHS"><code>HiGHS</code></a></td>
+<td>NVIDIA</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/NVIDIA/cuopt"><code>cuopt</code></a></td>
+<td>NVIDIA</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/MIT-Lu-Lab/MPAX"><code>MPAX</code></a></td>
+<td>agnostic (via <code>JAX</code>)</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/PSORLab/BatchPDLP.jl"><code>BatchPDLP.jl</code></a></td>
+<td>NVIDIA</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td><a href="https://github.com/JuliaDecisionFocusedLearning/CoolPDLP.jl"><code>CoolPDLP.jl</code></a></td>
+<td>Any</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="hardware-agnostic" class="slide level2">
-<h2>Hardware-agnostic</h2>
+<section id="coolpdlp.jl-is-hardware-agnostic" class="slide level2">
+<h2><code>CoolPDLP.jl</code> is hardware-agnostic</h2>
+<ul>
+<li>Coded with <a href="https://github.com/JuliaGPU/GPUArrays.jl"><code>GPUArrays.jl</code></a> and <a href="https://github.com/JuliaGPU/KernelAbstractions.jl"><code>KernelAbstractions.jl</code></a>.</li>
+<li>Runs on any GPU or CPU.</li>
+<li>Can use optimized linear algebra with e.g.&nbsp;<code>cuSPARSE</code></li>
+</ul>
 </section>
-<section id="matrix-agnostic" class="slide level2">
-<h2>Matrix-agnostic</h2>
+<section id="coolpdlp.jl-is-type-generic" class="slide level2">
+<h2><code>CoolPDLP.jl</code> is type-generic</h2>
+<ul>
+<li>The constraint matrix <span class="math inline">\(A\)</span> in <span class="math inline">\(Ax \leq b\)</span> is arbitrary
+<ul>
+<li>Dense</li>
+<li>Sparse</li>
+<li>Structured (!!!)</li>
+</ul></li>
+<li>The floating point precision is arbitrary
+<ul>
+<li><code>Float32</code></li>
+<li><code>Float64</code></li>
+<li>exotic types</li>
+</ul></li>
+</ul>
+</section>
+<section id="coolpdlp.jl-is-batchable" class="slide level2">
+<h2><code>CoolPDLP.jl</code> is batchable</h2>
+<p>Solves a bunch of problems in lockstep:</p>
+<p><span class="math display">\[\text{minimize} \quad [c_1, ..., c_B]^\top x \quad \text{subject to} \quad A x \leq [b_1, ..., b_B]\]</span></p>
+<p>The core primitive becomes sparse matrix-matrix product (SpMM).</p>
 </section></section>
 <section>
-<section id="live-demo" class="title-slide slide level1 center">
-<h1>Live demo</h1>
+<section id="package-demo" class="title-slide slide level1 center">
+<h1>Package demo</h1>
 
 </section>
-<section id="setting-up-a-problem" class="slide level2">
-<h2>Setting up a problem</h2>
+<section id="imports" class="slide level2">
+<h2>Imports</h2>
 <div id="2" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a aria-label="1"></a><span class="im">using</span> <span class="bu">CoolPDLP</span></span>
+<span id="cb1-2"><a aria-label="2"></a><span class="im">using</span> <span class="bu">HiGHS</span>: HiGHS</span>
+<span id="cb1-3"><a aria-label="3"></a><span class="im">using</span> <span class="bu">JLArrays</span></span>
+<span id="cb1-4"><a aria-label="4"></a><span class="im">using</span> <span class="bu">JuMP</span></span>
+<span id="cb1-5"><a aria-label="5"></a><span class="im">using</span> <span class="bu">MathOptBenchmarkInstances</span>: Netlib, list_instances, read_instance</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <div class="ansi-escaped-output">
 <pre><span class="ansi-green-fg ansi-bold">Precompiling</span> packages...
-   1162.6 ms<span class="ansi-green-fg">  ✓ </span>QuartoNotebookWorkerJSONExt<span class="ansi-bright-black-fg"> (serial)</span>
+   1227.5 ms<span class="ansi-green-fg">  ✓ </span>QuartoNotebookWorkerJSONExt<span class="ansi-bright-black-fg"> (serial)</span>
   1 dependency successfully precompiled in 1 seconds
 </pre>
 </div>
 </div>
 </div>
 </section>
+<section id="setting-up-a-problem" class="slide level2">
+<h2>Setting up a problem</h2>
+<div id="4" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-label="1"></a>dataset <span class="op">=</span> Netlib</span>
+<span id="cb2-2"><a aria-label="2"></a>name <span class="op">=</span> <span class="fu">list_instances</span>(dataset)[<span class="fl">1</span>]</span>
+<span id="cb2-3"><a aria-label="3"></a>qps, path <span class="op">=</span> <span class="fu">read_instance</span>(dataset, name)</span>
+<span id="cb2-4"><a aria-label="4"></a>milp <span class="op">=</span> <span class="fu">MILP</span>(qps; dataset, name, path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-green-fg ansi-bold"> Downloading</span> artifact: netliblp
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>MILP instance 25fv47 from dataset Netlib:
+- types:
+  - values Float64
+  - vectors Vector{Float64}
+  - matrices SparseArrays.SparseMatrixCSC{Float64, Int64}
+- variables: 1571
+  - 1571 continuous
+  - 0 integer
+- constraints: 821
+  - 305 inequalities
+  - 516 equalities
+- nonzeros: 10400</code></pre>
+</div>
+</div>
+</section>
 <section id="solving-on-the-cpu" class="slide level2">
 <h2>Solving on the CPU</h2>
+<div id="6" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a aria-label="1"></a>algo <span class="op">=</span> <span class="fu">PDLP</span>(;</span>
+<span id="cb4-2"><a aria-label="2"></a>    termination_reltol <span class="op">=</span> <span class="fl">1.0e-4</span>,</span>
+<span id="cb4-3"><a aria-label="3"></a>    time_limit <span class="op">=</span> <span class="fl">30.0</span></span>
+<span id="cb4-4"><a aria-label="4"></a>)</span>
+<span id="cb4-5"><a aria-label="5"></a><span class="fu">solve</span>(milp, algo)  <span class="co"># compile</span></span>
+<span id="cb4-6"><a aria-label="6"></a>sol, stats <span class="op">=</span> <span class="fu">solve</span>(milp, algo)</span>
+<span id="cb4-7"><a aria-label="7"></a>stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Convergence stats with termination status OPTIMAL:
+- KKT relative errors: primal 5.774e-05, dual 1.587e-05, gap 5.332e-05
+- time elapsed: 0.171 seconds
+- KKT passes: 7800</code></pre>
+</div>
+</div>
 </section>
 <section id="solving-on-the-gpu" class="slide level2">
 <h2>Solving on the GPU</h2>
+<div id="8" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a aria-label="1"></a>algo_gpu <span class="op">=</span> <span class="fu">PDLP</span>(</span>
+<span id="cb6-2"><a aria-label="2"></a>    <span class="dt">Float64</span>, <span class="dt">Int64</span>,</span>
+<span id="cb6-3"><a aria-label="3"></a>    GPUSparseMatrixCSR;  <span class="co"># replace with e.g. CuSparseMatrixCSR</span></span>
+<span id="cb6-4"><a aria-label="4"></a>    backend<span class="op">=</span><span class="fu">JLBackend</span>(),  <span class="co"># replace with e.g. CUDABackend()</span></span>
+<span id="cb6-5"><a aria-label="5"></a>    termination_reltol<span class="op">=</span><span class="fl">1.0f-4</span>,</span>
+<span id="cb6-6"><a aria-label="6"></a>    time_limit<span class="op">=</span><span class="fl">30.0</span>,</span>
+<span id="cb6-7"><a aria-label="7"></a>)</span>
+<span id="cb6-8"><a aria-label="8"></a><span class="fu">solve</span>(milp, algo_gpu)  <span class="co"># compile</span></span>
+<span id="cb6-9"><a aria-label="9"></a>sol_gpu, stats_gpu <span class="op">=</span> <span class="fu">solve</span>(milp, algo_gpu)</span>
+<span id="cb6-10"><a aria-label="10"></a>stats_gpu</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Convergence stats with termination status TIME_LIMIT:
+- KKT relative errors: primal 1.363e-04, dual 2.318e-05, gap 3.350e-04
+- time elapsed: 30.229 seconds
+- KKT passes: 7300</code></pre>
+</div>
+</div>
 </section>
 <section id="jump-interface" class="slide level2">
 <h2>JuMP interface</h2>
+<div id="10" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a aria-label="1"></a>model <span class="op">=</span> JuMP.<span class="fu">read_from_file</span>(path; format<span class="op">=</span>MOI.FileFormats.FORMAT_MPS)</span>
+<span id="cb8-2"><a aria-label="2"></a>JuMP.<span class="fu">set_optimizer</span>(model, CoolPDLP.Optimizer)</span>
+<span id="cb8-3"><a aria-label="3"></a>JuMP.<span class="fu">set_silent</span>(model)</span>
+<span id="cb8-4"><a aria-label="4"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"matrix_type"</span>, GPUSparseMatrixCSR)</span>
+<span id="cb8-5"><a aria-label="5"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"backend"</span>, <span class="fu">JLBackend</span>())</span>
+<span id="cb8-6"><a aria-label="6"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"termination_reltol"</span>, <span class="fl">1.0e-4</span>)</span>
+<span id="cb8-7"><a aria-label="7"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"time_limit"</span>, <span class="fl">30.0</span>)</span>
+<span id="cb8-8"><a aria-label="8"></a>JuMP.<span class="fu">optimize!</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section></section>
+<section>
+<section id="conclusion" class="title-slide slide level1 center">
+<h1>Conclusion</h1>
+
 </section>
-<section id="batched-mode" class="slide level2">
-<h2>Batched mode</h2>
+<section id="perspectives" class="slide level2">
+<h2>Perspectives</h2>
+<ul>
+<li>More functionalities: presolving, feasibility, polishing, infeasibility detection, crossover</li>
+<li>Kernel fusion with <a href="https://github.com/EnzymeAD/Reactant.jl"><code>Reactant.jl</code></a></li>
+<li>Extension to nonlinear problems (quadratic first)</li>
+<li>Applications to decision-focused learning <span class="citation" data-cites="mandiDecisionFocusedLearningFoundations2024">(<a href="#/references" role="doc-biblioref" onclick="">Mandi et al. 2024</a>)</span></li>
+</ul>
+</section>
+<section id="references" class="slide level2 smaller scrollable">
+<h2>References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-grandLpvizInteractiveLinear2026" class="csl-entry" role="listitem">
+Grand, Evan, and Michael Klamkin. 2026. <span>“Lpviz: <span>Interactive Linear Programming Visualization</span>.”</span> Pre-published April 30. <a href="https://doi.org/10.48550/arXiv.2604.27518">https://doi.org/10.48550/arXiv.2604.27518</a>.
+</div>
+<div id="ref-luOverviewGPUbasedFirstOrder2025" class="csl-entry" role="listitem">
+Lu, Haihao, and Jinwen Yang. 2025a. <span>“An <span>Overview</span> of <span class="nocase">GPU-based First-Order Methods</span> for <span>Linear Programming</span> and <span>Extensions</span>.”</span> Pre-published June 2. <a href="https://doi.org/10.48550/arXiv.2506.02174">https://doi.org/10.48550/arXiv.2506.02174</a>.
+</div>
+<div id="ref-luCuPDLPjlGPUImplementation2025" class="csl-entry" role="listitem">
+Lu, Haihao, and Jinwen Yang. 2025b. <span>“<span class="nocase">cuPDLP</span>.jl: <span>A GPU Implementation</span> of <span>Restarted Primal-Dual Hybrid Gradient</span> for <span>Linear Programming</span> in <span>Julia</span>.”</span> <em>Operations Research</em> 73 (6): 3440–52. <a href="https://doi.org/10.1287/opre.2024.1069">https://doi.org/10.1287/opre.2024.1069</a>.
+</div>
+<div id="ref-mandiDecisionFocusedLearningFoundations2024" class="csl-entry" role="listitem">
+Mandi, Jayanta, James Kotary, Senne Berden, et al. 2024. <span>“Decision-<span>Focused Learning</span>: <span>Foundations</span>, <span>State</span> of the <span>Art</span>, <span>Benchmark</span> and <span>Future Opportunities</span>.”</span> <em>Journal of Artificial Intelligence Research</em> 80 (August): 1623–701. <a href="https://doi.org/10.1613/jair.1.15320">https://doi.org/10.1613/jair.1.15320</a>.
+</div>
+</div>
 
 
 </section></section>
@@ -265,7 +655,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -390,9 +780,9 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1050,
+        width: 1280,
 
-        height: 700,
+        height: 720,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,

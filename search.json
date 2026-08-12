@@ -1,86 +1,114 @@
 [
   {
+    "objectID": "index.html#breakfast-optimization",
+    "href": "index.html#breakfast-optimization",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Breakfast optimization",
+    "text": "Breakfast optimization\nA bakery can produce croissants (1€) or pains au chocolat (1.5€):\n\n\n\n\nButter\nSugar\nFlour\n\n\n\n\n\nCroissant\n35g\n20g\n15g\n\n\n\nPain au chocolat\n25g\n30g\n20g\n\n\n\n\nThe ingredients have unit costs and supply limits:\n\n\n\n\nButter\nSugar\nFlour\n\n\n\n\nUnit cost\n2€/kg\n1€/kg\n0.5€/kg\n\n\nMax supply\n20kg\n100kg\n200kg\n\n\n\nHow much of each should they bake to maximize profits?"
+  },
+  {
+    "objectID": "index.html#mathematical-formulation",
+    "href": "index.html#mathematical-formulation",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Mathematical formulation",
+    "text": "Mathematical formulation\n\n\n\nDecision variables:\n\nQuantities \\(c, p\\)\nIngredient weights \\(b, s, f\\)\n\nObjective:\n\nRevenue\nCost\n\nConstraints:\n\nMax supply\nIngredients\n\n\n\n\\[\n\\begin{align*}\n\\max_{c, p, b, s, f} \\quad & +(1c + 1.5p) \\\\\n\\phantom{\\max_{c, p, b, s, f}} & - (2b + 1s + 0.5f) \\\\\n\\text{s.t.} \\quad & 0 \\leq c, p \\\\\n& 0 \\leq b \\leq 20 \\\\\n& 0 \\leq s \\leq 100 \\\\\n\\phantom{\\max_{c, p, b, s, f}} & 0 \\leq f \\leq 200 \\\\\n& 35c + 25p = b/1000 \\\\\n& 20c + 30p = s/1000 \\\\\n& 15c + 20p = f/1000\n\\end{align*}\n\\]"
+  },
+  {
     "objectID": "index.html#linear-programming",
     "href": "index.html#linear-programming",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Linear programming",
-    "text": "Linear programming"
+    "text": "Linear programming\nOptimize a linear objective subject to affine constraints:\n\\[\\text{minimize} \\quad c^\\top x \\quad \\text{subject to} \\quad A x \\leq b\\]\nMore useful than it seems:\n\nFor convex problems (subroutine of Frank-Wolfe)\nFor integer problems (subroutine of Branch & Bound)"
   },
   {
-    "objectID": "index.html#parallelization-opportunities",
-    "href": "index.html#parallelization-opportunities",
+    "objectID": "index.html#parallelization-opportunities-challenges",
+    "href": "index.html#parallelization-opportunities-challenges",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "Parallelization opportunities",
-    "text": "Parallelization opportunities"
-  },
-  {
-    "objectID": "index.html#parallelization-challenges",
-    "href": "index.html#parallelization-challenges",
-    "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "Parallelization challenges",
-    "text": "Parallelization challenges"
+    "section": "Parallelization opportunities & challenges",
+    "text": "Parallelization opportunities & challenges\n\n\nWhy parallelize?\n\nBecause we have GPUs!\nTo solve large instances\nTo solve several instances\n\n\nWhy not parallelize?\n\nBest CPU solvers: simplex & interior points\nSequential++ (sparse matrix factorizations)\nApplications require high precision\n\n\nVisualization with lpviz.net by (Grand and Klamkin 2026)."
   },
   {
     "objectID": "index.html#primal-dual-algorithms",
     "href": "index.html#primal-dual-algorithms",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Primal-dual algorithms",
-    "text": "Primal-dual algorithms"
+    "text": "Primal-dual algorithms\nGPUs are best leveraged with first-order methods (Lu and Yang 2025a):\n\nSame intuition as deep learning: gradient only\nCore primitive: sparse matrix-vector product (SpMV)\nRecent proof of concept… coded in Julia (Lu and Yang 2025b)"
   },
   {
-    "objectID": "index.html#existing-packages",
-    "href": "index.html#existing-packages",
+    "objectID": "index.html#state-of-the-art",
+    "href": "index.html#state-of-the-art",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "Existing packages",
-    "text": "Existing packages"
+    "section": "State of the art",
+    "text": "State of the art\n\n\n\nPackage\nHardware\nType-generic\nBatchable\n\n\n\n\ncuPDLPx\nNVIDIA, AMD\nNo\nNo\n\n\nHPR-LP-C\nNVIDIA\nNo\nNo\n\n\nHiGHS\nNVIDIA\nNo\nNo\n\n\ncuopt\nNVIDIA\nNo\nYes\n\n\nMPAX\nagnostic (via JAX)\nNo\nYes\n\n\nBatchPDLP.jl\nNVIDIA\nNo\nYes\n\n\nCoolPDLP.jl\nAny\nYes\nYes"
   },
   {
-    "objectID": "index.html#hardware-agnostic",
-    "href": "index.html#hardware-agnostic",
+    "objectID": "index.html#coolpdlp.jl-is-hardware-agnostic",
+    "href": "index.html#coolpdlp.jl-is-hardware-agnostic",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "Hardware-agnostic",
-    "text": "Hardware-agnostic"
+    "section": "CoolPDLP.jl is hardware-agnostic",
+    "text": "CoolPDLP.jl is hardware-agnostic\n\nCoded with GPUArrays.jl and KernelAbstractions.jl.\nRuns on any GPU or CPU.\nCan use optimized linear algebra with e.g. cuSPARSE"
   },
   {
-    "objectID": "index.html#matrix-agnostic",
-    "href": "index.html#matrix-agnostic",
+    "objectID": "index.html#coolpdlp.jl-is-type-generic",
+    "href": "index.html#coolpdlp.jl-is-type-generic",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "Matrix-agnostic",
-    "text": "Matrix-agnostic"
+    "section": "CoolPDLP.jl is type-generic",
+    "text": "CoolPDLP.jl is type-generic\n\nThe constraint matrix \\(A\\) in \\(Ax \\leq b\\) is arbitrary\n\nDense\nSparse\nStructured (!!!)\n\nThe floating point precision is arbitrary\n\nFloat32\nFloat64\nexotic types"
+  },
+  {
+    "objectID": "index.html#coolpdlp.jl-is-batchable",
+    "href": "index.html#coolpdlp.jl-is-batchable",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "CoolPDLP.jl is batchable",
+    "text": "CoolPDLP.jl is batchable\nSolves a bunch of problems in lockstep:\n\\[\\text{minimize} \\quad [c_1, ..., c_B]^\\top x \\quad \\text{subject to} \\quad A x \\leq [b_1, ..., b_B]\\]\nThe core primitive becomes sparse matrix-matrix product (SpMM)."
+  },
+  {
+    "objectID": "index.html#imports",
+    "href": "index.html#imports",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Imports",
+    "text": "Imports\n\nusing CoolPDLP\nusing HiGHS: HiGHS\nusing JLArrays\nusing JuMP\nusing MathOptBenchmarkInstances: Netlib, list_instances, read_instance\n\n\nPrecompiling packages...\n   1227.5 ms  ✓ QuartoNotebookWorkerJSONExt (serial)\n  1 dependency successfully precompiled in 1 seconds"
   },
   {
     "objectID": "index.html#setting-up-a-problem",
     "href": "index.html#setting-up-a-problem",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Setting up a problem",
-    "text": "Setting up a problem\n\n\n\nPrecompiling packages...\n   1162.6 ms  ✓ QuartoNotebookWorkerJSONExt (serial)\n  1 dependency successfully precompiled in 1 seconds"
+    "text": "Setting up a problem\n\ndataset = Netlib\nname = list_instances(dataset)[1]\nqps, path = read_instance(dataset, name)\nmilp = MILP(qps; dataset, name, path)\n\n\n Downloading artifact: netliblp\n\n\n\n\nMILP instance 25fv47 from dataset Netlib:\n- types:\n  - values Float64\n  - vectors Vector{Float64}\n  - matrices SparseArrays.SparseMatrixCSC{Float64, Int64}\n- variables: 1571\n  - 1571 continuous\n  - 0 integer\n- constraints: 821\n  - 305 inequalities\n  - 516 equalities\n- nonzeros: 10400"
   },
   {
     "objectID": "index.html#solving-on-the-cpu",
     "href": "index.html#solving-on-the-cpu",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Solving on the CPU",
-    "text": "Solving on the CPU"
+    "text": "Solving on the CPU\n\nalgo = PDLP(;\n    termination_reltol = 1.0e-4,\n    time_limit = 30.0\n)\nsolve(milp, algo)  # compile\nsol, stats = solve(milp, algo)\nstats\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 5.774e-05, dual 1.587e-05, gap 5.332e-05\n- time elapsed: 0.171 seconds\n- KKT passes: 7800"
   },
   {
     "objectID": "index.html#solving-on-the-gpu",
     "href": "index.html#solving-on-the-gpu",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Solving on the GPU",
-    "text": "Solving on the GPU"
+    "text": "Solving on the GPU\n\nalgo_gpu = PDLP(\n    Float64, Int64,\n    GPUSparseMatrixCSR;  # replace with e.g. CuSparseMatrixCSR\n    backend=JLBackend(),  # replace with e.g. CUDABackend()\n    termination_reltol=1.0f-4,\n    time_limit=30.0,\n)\nsolve(milp, algo_gpu)  # compile\nsol_gpu, stats_gpu = solve(milp, algo_gpu)\nstats_gpu\n\nConvergence stats with termination status TIME_LIMIT:\n- KKT relative errors: primal 1.363e-04, dual 2.318e-05, gap 3.350e-04\n- time elapsed: 30.229 seconds\n- KKT passes: 7300"
   },
   {
     "objectID": "index.html#jump-interface",
     "href": "index.html#jump-interface",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "JuMP interface",
-    "text": "JuMP interface"
+    "text": "JuMP interface\n\nmodel = JuMP.read_from_file(path; format=MOI.FileFormats.FORMAT_MPS)\nJuMP.set_optimizer(model, CoolPDLP.Optimizer)\nJuMP.set_silent(model)\nJuMP.set_attribute(model, \"matrix_type\", GPUSparseMatrixCSR)\nJuMP.set_attribute(model, \"backend\", JLBackend())\nJuMP.set_attribute(model, \"termination_reltol\", 1.0e-4)\nJuMP.set_attribute(model, \"time_limit\", 30.0)\nJuMP.optimize!(model)"
   },
   {
-    "objectID": "index.html#batched-mode",
-    "href": "index.html#batched-mode",
+    "objectID": "index.html#perspectives",
+    "href": "index.html#perspectives",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "Batched mode",
-    "text": "Batched mode"
+    "section": "Perspectives",
+    "text": "Perspectives\n\nMore functionalities: presolving, feasibility, polishing, infeasibility detection, crossover\nKernel fusion with Reactant.jl\nExtension to nonlinear problems (quadratic first)\nApplications to decision-focused learning (Mandi et al. 2024)"
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "References",
+    "text": "References\n\n\nGrand, Evan, and Michael Klamkin. 2026. “Lpviz: Interactive Linear Programming Visualization.” Pre-published April 30. https://doi.org/10.48550/arXiv.2604.27518.\n\n\nLu, Haihao, and Jinwen Yang. 2025a. “An Overview of GPU-based First-Order Methods for Linear Programming and Extensions.” Pre-published June 2. https://doi.org/10.48550/arXiv.2506.02174.\n\n\nLu, Haihao, and Jinwen Yang. 2025b. “cuPDLP.jl: A GPU Implementation of Restarted Primal-Dual Hybrid Gradient for Linear Programming in Julia.” Operations Research 73 (6): 3440–52. https://doi.org/10.1287/opre.2024.1069.\n\n\nMandi, Jayanta, James Kotary, Senne Berden, et al. 2024. “Decision-Focused Learning: Foundations, State of the Art, Benchmark and Future Opportunities.” Journal of Artificial Intelligence Research 80 (August): 1623–701. https://doi.org/10.1613/jair.1.15320."
   }
 ]
