@@ -1,0 +1,6 @@
+---
+title: "Hardware-agnostic linear programming on the GPU"
+author: "Guillaume Dalle, Michael Klamkin, Simeon Schaub"
+format: revealjs
+---
+
