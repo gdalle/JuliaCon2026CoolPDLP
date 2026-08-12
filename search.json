@@ -1,0 +1,86 @@
+[
+  {
+    "objectID": "index.html#linear-programming",
+    "href": "index.html#linear-programming",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Linear programming",
+    "text": "Linear programming"
+  },
+  {
+    "objectID": "index.html#parallelization-opportunities",
+    "href": "index.html#parallelization-opportunities",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Parallelization opportunities",
+    "text": "Parallelization opportunities"
+  },
+  {
+    "objectID": "index.html#parallelization-challenges",
+    "href": "index.html#parallelization-challenges",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Parallelization challenges",
+    "text": "Parallelization challenges"
+  },
+  {
+    "objectID": "index.html#primal-dual-algorithms",
+    "href": "index.html#primal-dual-algorithms",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Primal-dual algorithms",
+    "text": "Primal-dual algorithms"
+  },
+  {
+    "objectID": "index.html#existing-packages",
+    "href": "index.html#existing-packages",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Existing packages",
+    "text": "Existing packages"
+  },
+  {
+    "objectID": "index.html#hardware-agnostic",
+    "href": "index.html#hardware-agnostic",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Hardware-agnostic",
+    "text": "Hardware-agnostic"
+  },
+  {
+    "objectID": "index.html#matrix-agnostic",
+    "href": "index.html#matrix-agnostic",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Matrix-agnostic",
+    "text": "Matrix-agnostic"
+  },
+  {
+    "objectID": "index.html#setting-up-a-problem",
+    "href": "index.html#setting-up-a-problem",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Setting up a problem",
+    "text": "Setting up a problem\n\n\n\nPrecompiling packages...\n   1162.6 ms  ✓ QuartoNotebookWorkerJSONExt (serial)\n  1 dependency successfully precompiled in 1 seconds"
+  },
+  {
+    "objectID": "index.html#solving-on-the-cpu",
+    "href": "index.html#solving-on-the-cpu",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Solving on the CPU",
+    "text": "Solving on the CPU"
+  },
+  {
+    "objectID": "index.html#solving-on-the-gpu",
+    "href": "index.html#solving-on-the-gpu",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Solving on the GPU",
+    "text": "Solving on the GPU"
+  },
+  {
+    "objectID": "index.html#jump-interface",
+    "href": "index.html#jump-interface",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "JuMP interface",
+    "text": "JuMP interface"
+  },
+  {
+    "objectID": "index.html#batched-mode",
+    "href": "index.html#batched-mode",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Batched mode",
+    "text": "Batched mode"
+  }
+]

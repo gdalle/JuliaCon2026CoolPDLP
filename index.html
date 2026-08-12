@@ -6,10 +6,11 @@
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.9.37">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
 
   <meta name="author" content="Guillaume Dalle, Michael Klamkin, Simeon Schaub">
+  <meta name="dcterms.date" content="2026-08-13">
   <title>Hardware-agnostic linear programming on the GPU</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -20,10 +21,13 @@
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
-    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
     ul.task-list li input[type="checkbox"] {
@@ -135,17 +139,76 @@
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Guillaume Dalle, Michael Klamkin, Simeon Schaub 
+Guillaume Dalle, Michael Klamkin, Simeon Schaub
 </div>
 </div>
 </div>
+
+  <p class="date">2026-08-13</p>
+</section>
+<section>
+<section id="motivation" class="title-slide slide level1 center">
+<h1>Motivation</h1>
 
 </section>
-<section class="slide level2">
-
-
+<section id="linear-programming" class="slide level2">
+<h2>Linear programming</h2>
+</section>
+<section id="parallelization-opportunities" class="slide level2">
+<h2>Parallelization opportunities</h2>
+</section>
+<section id="parallelization-challenges" class="slide level2">
+<h2>Parallelization challenges</h2>
+</section>
+<section id="primal-dual-algorithms" class="slide level2">
+<h2>Primal-dual algorithms</h2>
+</section></section>
+<section>
+<section id="coolpdlp-design" class="title-slide slide level1 center">
+<h1>CoolPDLP design</h1>
 
 </section>
+<section id="existing-packages" class="slide level2">
+<h2>Existing packages</h2>
+</section>
+<section id="hardware-agnostic" class="slide level2">
+<h2>Hardware-agnostic</h2>
+</section>
+<section id="matrix-agnostic" class="slide level2">
+<h2>Matrix-agnostic</h2>
+</section></section>
+<section>
+<section id="live-demo" class="title-slide slide level1 center">
+<h1>Live demo</h1>
+
+</section>
+<section id="setting-up-a-problem" class="slide level2">
+<h2>Setting up a problem</h2>
+<div id="2" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-green-fg ansi-bold">Precompiling</span> packages...
+   1162.6 ms<span class="ansi-green-fg">  ✓ </span>QuartoNotebookWorkerJSONExt<span class="ansi-bright-black-fg"> (serial)</span>
+  1 dependency successfully precompiled in 1 seconds
+</pre>
+</div>
+</div>
+</div>
+</section>
+<section id="solving-on-the-cpu" class="slide level2">
+<h2>Solving on the CPU</h2>
+</section>
+<section id="solving-on-the-gpu" class="slide level2">
+<h2>Solving on the GPU</h2>
+</section>
+<section id="jump-interface" class="slide level2">
+<h2>JuMP interface</h2>
+</section>
+<section id="batched-mode" class="slide level2">
+<h2>Batched mode</h2>
+
+
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
@@ -431,7 +494,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
         }
           var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
           var mailtoRegex = new RegExp(/^mailto:/);
-            var filterRegex = new RegExp('/' + window.location.host + '/');
+            var filterRegex = new RegExp("https:\/\/gdalle\.github\.io\/JuliaCon2026CoolPDLP\/");
           var isInternal = (href) => {
               return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
           }
