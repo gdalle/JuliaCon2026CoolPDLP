@@ -5,3 +5,4 @@ _site
 Manifest.toml
 playground.jl
 /gpu_env/
+.cache/
