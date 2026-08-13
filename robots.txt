@@ -1,1 +1,1 @@
-Sitemap: https://gdalle.github.io/JuliaCon2026CoolPDLP/sitemap.xml
+Sitemap: https://gdalle.github.io/JuliaCon2026/sitemap.xml

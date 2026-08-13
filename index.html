@@ -231,6 +231,15 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 
   <p class="date">2026-08-13</p>
 </section>
+<section id="slides" class="slide level2">
+<h2>Slides</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><a href="https://gdalle.github.io/JuliaCon2026">gdalle.github.io/JuliaCon2026</a></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="img/qr-code.png"></p>
+</div></div>
+</section>
 <section>
 <section id="motivation" class="title-slide slide level1 center">
 <h1>Motivation</h1>
@@ -431,16 +440,16 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 </tbody>
 </table>
 </section>
-<section id="coolpdlp.jl-is-hardware-agnostic" class="slide level2">
-<h2><code>CoolPDLP.jl</code> is hardware-agnostic</h2>
+<section id="coolpdlp-is-hardware-agnostic" class="slide level2">
+<h2>CoolPDLP is hardware-agnostic</h2>
 <ul>
 <li>Coded with <a href="https://github.com/JuliaGPU/GPUArrays.jl"><code>GPUArrays.jl</code></a> and <a href="https://github.com/JuliaGPU/KernelAbstractions.jl"><code>KernelAbstractions.jl</code></a>.</li>
 <li>Runs on any GPU or CPU.</li>
 <li>Can use optimized linear algebra with e.g.&nbsp;<code>cuSPARSE</code></li>
 </ul>
 </section>
-<section id="coolpdlp.jl-is-type-generic" class="slide level2">
-<h2><code>CoolPDLP.jl</code> is type-generic</h2>
+<section id="coolpdlp-is-type-generic" class="slide level2">
+<h2>CoolPDLP is type-generic</h2>
 <ul>
 <li>The constraint matrix <span class="math inline">\(A\)</span> in <span class="math inline">\(Ax \leq b\)</span> is arbitrary
 <ul>
@@ -456,8 +465,8 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 </ul></li>
 </ul>
 </section>
-<section id="coolpdlp.jl-is-batchable" class="slide level2">
-<h2><code>CoolPDLP.jl</code> is batchable</h2>
+<section id="coolpdlp-is-batchable" class="slide level2">
+<h2>CoolPDLP is batchable</h2>
 <p>Solves a bunch of problems in lockstep:</p>
 <p><span class="math display">\[\text{minimize} \quad [c_1, ..., c_B]^\top x \quad \text{subject to} \quad A x \leq [b_1, ..., b_B]\]</span></p>
 <p>The core primitive becomes sparse matrix-matrix product (SpMM).</p>
@@ -467,31 +476,48 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <h1>Package demo</h1>
 
 </section>
-<section id="imports" class="slide level2">
-<h2>Imports</h2>
+<section id="set-up" class="slide level2">
+<h2>Set up</h2>
+<p>Useful imports</p>
 <div id="2" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a aria-label="1"></a><span class="im">using</span> <span class="bu">CoolPDLP</span></span>
-<span id="cb1-2"><a aria-label="2"></a><span class="im">using</span> <span class="bu">HiGHS</span>: HiGHS</span>
-<span id="cb1-3"><a aria-label="3"></a><span class="im">using</span> <span class="bu">JLArrays</span></span>
-<span id="cb1-4"><a aria-label="4"></a><span class="im">using</span> <span class="bu">JuMP</span></span>
-<span id="cb1-5"><a aria-label="5"></a><span class="im">using</span> <span class="bu">MathOptBenchmarkInstances</span>: Netlib, list_instances, read_instance</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a aria-label="2"></a><span class="im">import</span> <span class="bu">GPUSelect</span></span>
+<span id="cb1-3"><a aria-label="3"></a><span class="im">import</span> <span class="bu">HiGHS</span>, <span class="bu">JuMP</span>, <span class="bu">MathOptInterface</span> as MOI</span>
+<span id="cb1-4"><a aria-label="4"></a><span class="im">import</span> <span class="bu">MathOptBenchmarkInstances</span> as MOBI</span>
+<span id="cb1-5"><a aria-label="5"></a><span class="im">using</span> <span class="bu">JLArrays</span>, <span class="bu">SparseArrays</span></span>
+<span id="cb1-6"><a aria-label="6"></a><span class="cn">ENV</span>[<span class="st">"DATADEPS_ALWAYS_ACCEPT"</span>] <span class="op">=</span> <span class="cn">true</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <div class="ansi-escaped-output">
 <pre><span class="ansi-green-fg ansi-bold">Precompiling</span> packages...
-   1227.5 ms<span class="ansi-green-fg">  ✓ </span>QuartoNotebookWorkerJSONExt<span class="ansi-bright-black-fg"> (serial)</span>
+   1240.1 ms<span class="ansi-green-fg">  ✓ </span>QuartoNotebookWorkerJSONExt<span class="ansi-bright-black-fg"> (serial)</span>
   1 dependency successfully precompiled in 1 seconds
 </pre>
 </div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>true</code></pre>
+</div>
+</div>
+<p>GPU environment setup</p>
+<div id="4" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a aria-label="1"></a>backend <span class="op">=</span> <span class="cf">if</span> <span class="fu">parse</span>(<span class="dt">Bool</span>, <span class="fu">get</span>(<span class="cn">ENV</span>, <span class="st">"CI"</span>, <span class="st">"false"</span>))</span>
+<span id="cb3-2"><a aria-label="2"></a>    <span class="fu">JLBackend</span>()</span>
+<span id="cb3-3"><a aria-label="3"></a><span class="cf">else</span></span>
+<span id="cb3-4"><a aria-label="4"></a>    <span class="co"># GPUSelect.auto_install!()</span></span>
+<span id="cb3-5"><a aria-label="5"></a>    GPUSelect.<span class="fu">Backend</span>()</span>
+<span id="cb3-6"><a aria-label="6"></a><span class="cf">end</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>JLBackend(false)</code></pre>
 </div>
 </div>
 </section>
 <section id="setting-up-a-problem" class="slide level2">
 <h2>Setting up a problem</h2>
-<div id="4" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-label="1"></a>dataset <span class="op">=</span> Netlib</span>
-<span id="cb2-2"><a aria-label="2"></a>name <span class="op">=</span> <span class="fu">list_instances</span>(dataset)[<span class="fl">1</span>]</span>
-<span id="cb2-3"><a aria-label="3"></a>qps, path <span class="op">=</span> <span class="fu">read_instance</span>(dataset, name)</span>
-<span id="cb2-4"><a aria-label="4"></a>milp <span class="op">=</span> <span class="fu">MILP</span>(qps; dataset, name, path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="6" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a aria-label="1"></a>dataset <span class="op">=</span> MOBI.Netlib</span>
+<span id="cb5-2"><a aria-label="2"></a>name <span class="op">=</span> MOBI.<span class="fu">list_instances</span>(dataset)[<span class="fl">1</span>]</span>
+<span id="cb5-3"><a aria-label="3"></a>qps, path <span class="op">=</span> MOBI.<span class="fu">read_instance</span>(dataset, name);</span>
+<span id="cb5-4"><a aria-label="4"></a>milp <span class="op">=</span> <span class="fu">MILP</span>(qps; dataset, name, path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <div class="ansi-escaped-output">
 <pre><span class="ansi-green-fg ansi-bold"> Downloading</span> artifact: netliblp
@@ -516,54 +542,65 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 </section>
 <section id="solving-on-the-cpu" class="slide level2">
 <h2>Solving on the CPU</h2>
-<div id="6" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a aria-label="1"></a>algo <span class="op">=</span> <span class="fu">PDLP</span>(;</span>
-<span id="cb4-2"><a aria-label="2"></a>    termination_reltol <span class="op">=</span> <span class="fl">1.0e-4</span>,</span>
-<span id="cb4-3"><a aria-label="3"></a>    time_limit <span class="op">=</span> <span class="fl">30.0</span></span>
-<span id="cb4-4"><a aria-label="4"></a>)</span>
-<span id="cb4-5"><a aria-label="5"></a><span class="fu">solve</span>(milp, algo)  <span class="co"># compile</span></span>
-<span id="cb4-6"><a aria-label="6"></a>sol, stats <span class="op">=</span> <span class="fu">solve</span>(milp, algo)</span>
-<span id="cb4-7"><a aria-label="7"></a>stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="8" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a aria-label="1"></a>algo <span class="op">=</span> <span class="fu">PDLP</span>(</span>
+<span id="cb7-2"><a aria-label="2"></a>    <span class="dt">Float32</span>, <span class="dt">Int32</span>, <span class="dt">SparseMatrixCSC</span>;</span>
+<span id="cb7-3"><a aria-label="3"></a>    termination_reltol<span class="op">=</span><span class="fl">1.0f-1</span>, time_limit<span class="op">=</span><span class="fl">30.0</span>,</span>
+<span id="cb7-4"><a aria-label="4"></a>)</span>
+<span id="cb7-5"><a aria-label="5"></a><span class="fu">solve</span>(milp, algo);  <span class="co"># compile</span></span>
+<span id="cb7-6"><a aria-label="6"></a>sol, stats <span class="op">=</span> <span class="fu">solve</span>(milp, algo);</span>
+<span id="cb7-7"><a aria-label="7"></a>stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>Convergence stats with termination status OPTIMAL:
-- KKT relative errors: primal 5.774e-05, dual 1.587e-05, gap 5.332e-05
-- time elapsed: 0.171 seconds
-- KKT passes: 7800</code></pre>
+- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02
+- time elapsed: 0.004 seconds
+- KKT passes: 100</code></pre>
 </div>
 </div>
 </section>
 <section id="solving-on-the-gpu" class="slide level2">
 <h2>Solving on the GPU</h2>
-<div id="8" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a aria-label="1"></a>algo_gpu <span class="op">=</span> <span class="fu">PDLP</span>(</span>
-<span id="cb6-2"><a aria-label="2"></a>    <span class="dt">Float64</span>, <span class="dt">Int64</span>,</span>
-<span id="cb6-3"><a aria-label="3"></a>    GPUSparseMatrixCSR;  <span class="co"># replace with e.g. CuSparseMatrixCSR</span></span>
-<span id="cb6-4"><a aria-label="4"></a>    backend<span class="op">=</span><span class="fu">JLBackend</span>(),  <span class="co"># replace with e.g. CUDABackend()</span></span>
-<span id="cb6-5"><a aria-label="5"></a>    termination_reltol<span class="op">=</span><span class="fl">1.0f-4</span>,</span>
-<span id="cb6-6"><a aria-label="6"></a>    time_limit<span class="op">=</span><span class="fl">30.0</span>,</span>
-<span id="cb6-7"><a aria-label="7"></a>)</span>
-<span id="cb6-8"><a aria-label="8"></a><span class="fu">solve</span>(milp, algo_gpu)  <span class="co"># compile</span></span>
-<span id="cb6-9"><a aria-label="9"></a>sol_gpu, stats_gpu <span class="op">=</span> <span class="fu">solve</span>(milp, algo_gpu)</span>
-<span id="cb6-10"><a aria-label="10"></a>stats_gpu</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="10" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a aria-label="1"></a>algo_gpu <span class="op">=</span> <span class="fu">PDLP</span>(</span>
+<span id="cb9-2"><a aria-label="2"></a>    <span class="dt">Float32</span>, <span class="dt">Int32</span>, GPUSparseMatrixCOO; backend,</span>
+<span id="cb9-3"><a aria-label="3"></a>    termination_reltol<span class="op">=</span><span class="fl">1.0f-1</span>, time_limit<span class="op">=</span><span class="fl">30.0</span>,</span>
+<span id="cb9-4"><a aria-label="4"></a>)</span>
+<span id="cb9-5"><a aria-label="5"></a><span class="fu">solve</span>(milp, algo_gpu);  <span class="co"># compile</span></span>
+<span id="cb9-6"><a aria-label="6"></a>sol_gpu, stats_gpu <span class="op">=</span> <span class="fu">solve</span>(milp, algo_gpu);</span>
+<span id="cb9-7"><a aria-label="7"></a>stats_gpu</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>Convergence stats with termination status TIME_LIMIT:
-- KKT relative errors: primal 1.363e-04, dual 2.318e-05, gap 3.350e-04
-- time elapsed: 30.229 seconds
-- KKT passes: 7300</code></pre>
+<pre><code>Convergence stats with termination status OPTIMAL:
+- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02
+- time elapsed: 0.429 seconds
+- KKT passes: 100</code></pre>
 </div>
 </div>
 </section>
 <section id="jump-interface" class="slide level2">
 <h2>JuMP interface</h2>
-<div id="10" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a aria-label="1"></a>model <span class="op">=</span> JuMP.<span class="fu">read_from_file</span>(path; format<span class="op">=</span>MOI.FileFormats.FORMAT_MPS)</span>
-<span id="cb8-2"><a aria-label="2"></a>JuMP.<span class="fu">set_optimizer</span>(model, CoolPDLP.Optimizer)</span>
-<span id="cb8-3"><a aria-label="3"></a>JuMP.<span class="fu">set_silent</span>(model)</span>
-<span id="cb8-4"><a aria-label="4"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"matrix_type"</span>, GPUSparseMatrixCSR)</span>
-<span id="cb8-5"><a aria-label="5"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"backend"</span>, <span class="fu">JLBackend</span>())</span>
-<span id="cb8-6"><a aria-label="6"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"termination_reltol"</span>, <span class="fl">1.0e-4</span>)</span>
-<span id="cb8-7"><a aria-label="7"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"time_limit"</span>, <span class="fl">30.0</span>)</span>
-<span id="cb8-8"><a aria-label="8"></a>JuMP.<span class="fu">optimize!</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="12" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a aria-label="1"></a>model <span class="op">=</span> JuMP.<span class="fu">read_from_file</span>(path; format <span class="op">=</span> MOI.FileFormats.FORMAT_MPS)</span>
+<span id="cb11-2"><a aria-label="2"></a>JuMP.<span class="fu">relax_integrality</span>(model)</span>
+<span id="cb11-3"><a aria-label="3"></a>JuMP.<span class="fu">set_optimizer</span>(model, CoolPDLP.Optimizer)</span>
+<span id="cb11-4"><a aria-label="4"></a>JuMP.<span class="fu">set_silent</span>(model)</span>
+<span id="cb11-5"><a aria-label="5"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"float_type"</span>, <span class="dt">Float32</span>)</span>
+<span id="cb11-6"><a aria-label="6"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"int_type"</span>, <span class="dt">Int32</span>)</span>
+<span id="cb11-7"><a aria-label="7"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"matrix_type"</span>, GPUSparseMatrixCOO)</span>
+<span id="cb11-8"><a aria-label="8"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"backend"</span>, backend)</span>
+<span id="cb11-9"><a aria-label="9"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"termination_reltol"</span>, <span class="fl">1.0e-1</span>)</span>
+<span id="cb11-10"><a aria-label="10"></a>JuMP.<span class="fu">set_attribute</span>(model, <span class="st">"time_limit"</span>, <span class="fl">30.0</span>)</span>
+<span id="cb11-11"><a aria-label="11"></a>JuMP.<span class="fu">optimize!</span>(model)</span>
+<span id="cb11-12"><a aria-label="12"></a>JuMP.<span class="fu">is_solved_and_feasible</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-yellow-fg ansi-bold">┌ </span><span class="ansi-yellow-fg ansi-bold">Warning: </span>Got mismatched float type: solving in Float32 but returning the solution in Float64.
+<span class="ansi-yellow-fg ansi-bold">└ </span><span class="ansi-bright-black-fg">@ CoolPDLP ~/.julia/packages/CoolPDLP/fN3I2/src/MOI_wrapper.jl:225</span>
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>true</code></pre>
+</div>
 </div>
 </section></section>
 <section>
@@ -884,7 +921,7 @@ Mandi, Jayanta, James Kotary, Senne Berden, et al. 2024. <span>“Decision-<span
         }
           var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
           var mailtoRegex = new RegExp(/^mailto:/);
-            var filterRegex = new RegExp("https:\/\/gdalle\.github\.io\/JuliaCon2026CoolPDLP\/");
+            var filterRegex = new RegExp("https:\/\/gdalle\.github\.io\/JuliaCon2026\/");
           var isInternal = (href) => {
               return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
           }

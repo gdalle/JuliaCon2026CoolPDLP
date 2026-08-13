@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "index.html#slides",
+    "href": "index.html#slides",
+    "title": "Hardware-agnostic linear programming on the GPU",
+    "section": "Slides",
+    "text": "Slides\n\n\ngdalle.github.io/JuliaCon2026"
+  },
+  {
     "objectID": "index.html#breakfast-optimization",
     "href": "index.html#breakfast-optimization",
     "title": "Hardware-agnostic linear programming on the GPU",
@@ -42,60 +49,60 @@
     "text": "State of the art\n\n\n\nPackage\nHardware\nType-generic\nBatchable\n\n\n\n\ncuPDLPx\nNVIDIA, AMD\nNo\nNo\n\n\nHPR-LP-C\nNVIDIA\nNo\nNo\n\n\nHiGHS\nNVIDIA\nNo\nNo\n\n\ncuopt\nNVIDIA\nNo\nYes\n\n\nMPAX\nagnostic (via JAX)\nNo\nYes\n\n\nBatchPDLP.jl\nNVIDIA\nNo\nYes\n\n\nCoolPDLP.jl\nAny\nYes\nYes"
   },
   {
-    "objectID": "index.html#coolpdlp.jl-is-hardware-agnostic",
-    "href": "index.html#coolpdlp.jl-is-hardware-agnostic",
+    "objectID": "index.html#coolpdlp-is-hardware-agnostic",
+    "href": "index.html#coolpdlp-is-hardware-agnostic",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "CoolPDLP.jl is hardware-agnostic",
-    "text": "CoolPDLP.jl is hardware-agnostic\n\nCoded with GPUArrays.jl and KernelAbstractions.jl.\nRuns on any GPU or CPU.\nCan use optimized linear algebra with e.g. cuSPARSE"
+    "section": "CoolPDLP is hardware-agnostic",
+    "text": "CoolPDLP is hardware-agnostic\n\nCoded with GPUArrays.jl and KernelAbstractions.jl.\nRuns on any GPU or CPU.\nCan use optimized linear algebra with e.g. cuSPARSE"
   },
   {
-    "objectID": "index.html#coolpdlp.jl-is-type-generic",
-    "href": "index.html#coolpdlp.jl-is-type-generic",
+    "objectID": "index.html#coolpdlp-is-type-generic",
+    "href": "index.html#coolpdlp-is-type-generic",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "CoolPDLP.jl is type-generic",
-    "text": "CoolPDLP.jl is type-generic\n\nThe constraint matrix \\(A\\) in \\(Ax \\leq b\\) is arbitrary\n\nDense\nSparse\nStructured (!!!)\n\nThe floating point precision is arbitrary\n\nFloat32\nFloat64\nexotic types"
+    "section": "CoolPDLP is type-generic",
+    "text": "CoolPDLP is type-generic\n\nThe constraint matrix \\(A\\) in \\(Ax \\leq b\\) is arbitrary\n\nDense\nSparse\nStructured (!!!)\n\nThe floating point precision is arbitrary\n\nFloat32\nFloat64\nexotic types"
   },
   {
-    "objectID": "index.html#coolpdlp.jl-is-batchable",
-    "href": "index.html#coolpdlp.jl-is-batchable",
+    "objectID": "index.html#coolpdlp-is-batchable",
+    "href": "index.html#coolpdlp-is-batchable",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "CoolPDLP.jl is batchable",
-    "text": "CoolPDLP.jl is batchable\nSolves a bunch of problems in lockstep:\n\\[\\text{minimize} \\quad [c_1, ..., c_B]^\\top x \\quad \\text{subject to} \\quad A x \\leq [b_1, ..., b_B]\\]\nThe core primitive becomes sparse matrix-matrix product (SpMM)."
+    "section": "CoolPDLP is batchable",
+    "text": "CoolPDLP is batchable\nSolves a bunch of problems in lockstep:\n\\[\\text{minimize} \\quad [c_1, ..., c_B]^\\top x \\quad \\text{subject to} \\quad A x \\leq [b_1, ..., b_B]\\]\nThe core primitive becomes sparse matrix-matrix product (SpMM)."
   },
   {
-    "objectID": "index.html#imports",
-    "href": "index.html#imports",
+    "objectID": "index.html#set-up",
+    "href": "index.html#set-up",
     "title": "Hardware-agnostic linear programming on the GPU",
-    "section": "Imports",
-    "text": "Imports\n\nusing CoolPDLP\nusing HiGHS: HiGHS\nusing JLArrays\nusing JuMP\nusing MathOptBenchmarkInstances: Netlib, list_instances, read_instance\n\n\nPrecompiling packages...\n   1227.5 ms  ✓ QuartoNotebookWorkerJSONExt (serial)\n  1 dependency successfully precompiled in 1 seconds"
+    "section": "Set up",
+    "text": "Set up\nUseful imports\n\nusing CoolPDLP\nimport GPUSelect\nimport HiGHS, JuMP, MathOptInterface as MOI\nimport MathOptBenchmarkInstances as MOBI\nusing JLArrays, SparseArrays\nENV[\"DATADEPS_ALWAYS_ACCEPT\"] = true\n\n\nPrecompiling packages...\n   1240.1 ms  ✓ QuartoNotebookWorkerJSONExt (serial)\n  1 dependency successfully precompiled in 1 seconds\n\n\n\n\ntrue\n\n\nGPU environment setup\n\nbackend = if parse(Bool, get(ENV, \"CI\", \"false\"))\n    JLBackend()\nelse\n    # GPUSelect.auto_install!()\n    GPUSelect.Backend()\nend\n\nJLBackend(false)"
   },
   {
     "objectID": "index.html#setting-up-a-problem",
     "href": "index.html#setting-up-a-problem",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Setting up a problem",
-    "text": "Setting up a problem\n\ndataset = Netlib\nname = list_instances(dataset)[1]\nqps, path = read_instance(dataset, name)\nmilp = MILP(qps; dataset, name, path)\n\n\n Downloading artifact: netliblp\n\n\n\n\nMILP instance 25fv47 from dataset Netlib:\n- types:\n  - values Float64\n  - vectors Vector{Float64}\n  - matrices SparseArrays.SparseMatrixCSC{Float64, Int64}\n- variables: 1571\n  - 1571 continuous\n  - 0 integer\n- constraints: 821\n  - 305 inequalities\n  - 516 equalities\n- nonzeros: 10400"
+    "text": "Setting up a problem\n\ndataset = MOBI.Netlib\nname = MOBI.list_instances(dataset)[1]\nqps, path = MOBI.read_instance(dataset, name);\nmilp = MILP(qps; dataset, name, path)\n\n\n Downloading artifact: netliblp\n\n\n\n\nMILP instance 25fv47 from dataset Netlib:\n- types:\n  - values Float64\n  - vectors Vector{Float64}\n  - matrices SparseArrays.SparseMatrixCSC{Float64, Int64}\n- variables: 1571\n  - 1571 continuous\n  - 0 integer\n- constraints: 821\n  - 305 inequalities\n  - 516 equalities\n- nonzeros: 10400"
   },
   {
     "objectID": "index.html#solving-on-the-cpu",
     "href": "index.html#solving-on-the-cpu",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Solving on the CPU",
-    "text": "Solving on the CPU\n\nalgo = PDLP(;\n    termination_reltol = 1.0e-4,\n    time_limit = 30.0\n)\nsolve(milp, algo)  # compile\nsol, stats = solve(milp, algo)\nstats\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 5.774e-05, dual 1.587e-05, gap 5.332e-05\n- time elapsed: 0.171 seconds\n- KKT passes: 7800"
+    "text": "Solving on the CPU\n\nalgo = PDLP(\n    Float32, Int32, SparseMatrixCSC;\n    termination_reltol=1.0f-1, time_limit=30.0,\n)\nsolve(milp, algo);  # compile\nsol, stats = solve(milp, algo);\nstats\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02\n- time elapsed: 0.004 seconds\n- KKT passes: 100"
   },
   {
     "objectID": "index.html#solving-on-the-gpu",
     "href": "index.html#solving-on-the-gpu",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Solving on the GPU",
-    "text": "Solving on the GPU\n\nalgo_gpu = PDLP(\n    Float64, Int64,\n    GPUSparseMatrixCSR;  # replace with e.g. CuSparseMatrixCSR\n    backend=JLBackend(),  # replace with e.g. CUDABackend()\n    termination_reltol=1.0f-4,\n    time_limit=30.0,\n)\nsolve(milp, algo_gpu)  # compile\nsol_gpu, stats_gpu = solve(milp, algo_gpu)\nstats_gpu\n\nConvergence stats with termination status TIME_LIMIT:\n- KKT relative errors: primal 1.363e-04, dual 2.318e-05, gap 3.350e-04\n- time elapsed: 30.229 seconds\n- KKT passes: 7300"
+    "text": "Solving on the GPU\n\nalgo_gpu = PDLP(\n    Float32, Int32, GPUSparseMatrixCOO; backend,\n    termination_reltol=1.0f-1, time_limit=30.0,\n)\nsolve(milp, algo_gpu);  # compile\nsol_gpu, stats_gpu = solve(milp, algo_gpu);\nstats_gpu\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02\n- time elapsed: 0.429 seconds\n- KKT passes: 100"
   },
   {
     "objectID": "index.html#jump-interface",
     "href": "index.html#jump-interface",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "JuMP interface",
-    "text": "JuMP interface\n\nmodel = JuMP.read_from_file(path; format=MOI.FileFormats.FORMAT_MPS)\nJuMP.set_optimizer(model, CoolPDLP.Optimizer)\nJuMP.set_silent(model)\nJuMP.set_attribute(model, \"matrix_type\", GPUSparseMatrixCSR)\nJuMP.set_attribute(model, \"backend\", JLBackend())\nJuMP.set_attribute(model, \"termination_reltol\", 1.0e-4)\nJuMP.set_attribute(model, \"time_limit\", 30.0)\nJuMP.optimize!(model)"
+    "text": "JuMP interface\n\nmodel = JuMP.read_from_file(path; format = MOI.FileFormats.FORMAT_MPS)\nJuMP.relax_integrality(model)\nJuMP.set_optimizer(model, CoolPDLP.Optimizer)\nJuMP.set_silent(model)\nJuMP.set_attribute(model, \"float_type\", Float32)\nJuMP.set_attribute(model, \"int_type\", Int32)\nJuMP.set_attribute(model, \"matrix_type\", GPUSparseMatrixCOO)\nJuMP.set_attribute(model, \"backend\", backend)\nJuMP.set_attribute(model, \"termination_reltol\", 1.0e-1)\nJuMP.set_attribute(model, \"time_limit\", 30.0)\nJuMP.optimize!(model)\nJuMP.is_solved_and_feasible(model)\n\n\n┌ Warning: Got mismatched float type: solving in Float32 but returning the solution in Float64.\n└ @ CoolPDLP ~/.julia/packages/CoolPDLP/fN3I2/src/MOI_wrapper.jl:225\n\n\n\n\ntrue"
   },
   {
     "objectID": "index.html#perspectives",
