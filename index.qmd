@@ -206,14 +206,18 @@ stats_gpu
 
 ```{julia}
 model = JuMP.read_from_file(path; format = MOI.FileFormats.FORMAT_MPS)
+JuMP.relax_integrality(model)
 JuMP.set_optimizer(model, CoolPDLP.Optimizer)
 JuMP.set_silent(model)
-JuMP.set_attribute(model, "matrix_type", GPUSparseMatrixCSR)
-JuMP.set_attribute(model, "backend", JLBackend())
-JuMP.set_attribute(model, "termination_reltol", 1.0f-1)
+JuMP.set_attribute(model, "float_type", Float32)
+JuMP.set_attribute(model, "int_type", Int32)
+JuMP.set_attribute(model, "matrix_type", GPUSparseMatrixCOO)
+JuMP.set_attribute(model, "backend", backend)
+JuMP.set_attribute(model, "termination_reltol", 1.0e-1)
 JuMP.set_attribute(model, "time_limit", 30.0)
 JuMP.optimize!(model)
 JuMP.is_solved_and_feasible(model)
+JuMP.objective_value(model)
 ```
 
 # Conclusion
