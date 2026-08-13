@@ -23,7 +23,7 @@ bibliography: CoolPDLP.bib
 :::
 
 ::: {.column width="50%"}
-![QR](img/qr-code.png)
+![](img/qr-code.png)
 :::
 
 ::::
@@ -204,7 +204,7 @@ milp = MILP(qps; dataset, name, path)
 ```{julia}
 algo = PDLP(
     Float32, Int32, SparseMatrixCSC;
-    termination_reltol = 1.0f-1, time_limit = 30.0,
+    termination_reltol=1.0f-1, time_limit=30.0,
 )
 solve(milp, algo);  # compile
 sol, stats = solve(milp, algo);
@@ -216,7 +216,7 @@ stats
 ```{julia}
 algo_gpu = PDLP(
     Float32, Int32, GPUSparseMatrixCOO; backend,
-    termination_reltol = 1.0f-1, time_limit = 30.0,
+    termination_reltol=1.0f-1, time_limit=30.0,
 )
 solve(milp, algo_gpu);  # compile
 sol_gpu, stats_gpu = solve(milp, algo_gpu);
@@ -226,7 +226,7 @@ stats_gpu
 ## JuMP interface
 
 ```{julia}
-model = JuMP.read_from_file(path; format=MOI.FileFormats.FORMAT_MPS)
+model = JuMP.read_from_file(path; format = MOI.FileFormats.FORMAT_MPS)
 JuMP.relax_integrality(model)
 JuMP.set_optimizer(model, CoolPDLP.Optimizer)
 JuMP.set_silent(model)
