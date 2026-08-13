@@ -247,7 +247,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 </section>
 <section id="breakfast-optimization" class="slide level2">
 <h2>Breakfast optimization</h2>
-<p>A bakery can produce <em>croissants</em> (1€) or <em>pains au chocolat</em> (1.5€):</p>
+<p>A bakery can produce <em>croissants</em> (1.2€) or <em>pains au chocolat</em> (1.5€):</p>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -294,9 +294,9 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 </tr>
 <tr class="even">
 <td>Max supply</td>
-<td>20kg</td>
-<td>100kg</td>
-<td>200kg</td>
+<td>19kg</td>
+<td>14kg</td>
+<td>12kg</td>
 </tr>
 </tbody>
 </table>
@@ -326,15 +326,15 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 </div><div class="column" style="width:60%;">
 <p><span class="math display">\[
 \begin{align*}
-\max_{c, p, b, s, f} \quad &amp; +(1c + 1.5p) \\
+\max_{c, p, b, s, f} \quad &amp; +(1.2c + 1.5p) \\
 \phantom{\max_{c, p, b, s, f}} &amp; - (2b + 1s + 0.5f) \\
 \text{s.t.} \quad &amp; 0 \leq c, p \\
-&amp; 0 \leq b \leq 20 \\
-&amp; 0 \leq s \leq 100 \\
-\phantom{\max_{c, p, b, s, f}} &amp; 0 \leq f \leq 200 \\
-&amp; 35c + 25p = b/1000 \\
-&amp; 20c + 30p = s/1000 \\
-&amp; 15c + 20p = f/1000
+&amp; 0 \leq b \leq 19 \\
+&amp; 0 \leq s \leq 14 \\
+\phantom{\max_{c, p, b, s, f}} &amp; 0 \leq f \leq 12 \\
+&amp; 35c + 25p = 1000b \\
+&amp; 20c + 30p = 1000s \\
+&amp; 15c + 20p = 1000f
 \end{align*}
 \]</span></p>
 </div></div>
@@ -489,7 +489,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <div class="cell-output cell-output-stdout">
 <div class="ansi-escaped-output">
 <pre><span class="ansi-green-fg ansi-bold">Precompiling</span> packages...
-   1240.1 ms<span class="ansi-green-fg">  ✓ </span>QuartoNotebookWorkerJSONExt<span class="ansi-bright-black-fg"> (serial)</span>
+   1150.7 ms<span class="ansi-green-fg">  ✓ </span>QuartoNotebookWorkerJSONExt<span class="ansi-bright-black-fg"> (serial)</span>
   1 dependency successfully precompiled in 1 seconds
 </pre>
 </div>
@@ -545,7 +545,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <div id="8" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a aria-label="1"></a>algo <span class="op">=</span> <span class="fu">PDLP</span>(</span>
 <span id="cb7-2"><a aria-label="2"></a>    <span class="dt">Float32</span>, <span class="dt">Int32</span>, <span class="dt">SparseMatrixCSC</span>;</span>
-<span id="cb7-3"><a aria-label="3"></a>    termination_reltol<span class="op">=</span><span class="fl">1.0f-1</span>, time_limit<span class="op">=</span><span class="fl">30.0</span>,</span>
+<span id="cb7-3"><a aria-label="3"></a>    termination_reltol <span class="op">=</span> <span class="fl">1.0f-1</span>, time_limit <span class="op">=</span> <span class="fl">30.0</span>,</span>
 <span id="cb7-4"><a aria-label="4"></a>)</span>
 <span id="cb7-5"><a aria-label="5"></a><span class="fu">solve</span>(milp, algo);  <span class="co"># compile</span></span>
 <span id="cb7-6"><a aria-label="6"></a>sol, stats <span class="op">=</span> <span class="fu">solve</span>(milp, algo);</span>
@@ -553,7 +553,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>Convergence stats with termination status OPTIMAL:
 - KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02
-- time elapsed: 0.004 seconds
+- time elapsed: 0.006 seconds
 - KKT passes: 100</code></pre>
 </div>
 </div>
@@ -563,7 +563,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <div id="10" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a aria-label="1"></a>algo_gpu <span class="op">=</span> <span class="fu">PDLP</span>(</span>
 <span id="cb9-2"><a aria-label="2"></a>    <span class="dt">Float32</span>, <span class="dt">Int32</span>, GPUSparseMatrixCOO; backend,</span>
-<span id="cb9-3"><a aria-label="3"></a>    termination_reltol<span class="op">=</span><span class="fl">1.0f-1</span>, time_limit<span class="op">=</span><span class="fl">30.0</span>,</span>
+<span id="cb9-3"><a aria-label="3"></a>    termination_reltol <span class="op">=</span> <span class="fl">1.0f-1</span>, time_limit <span class="op">=</span> <span class="fl">30.0</span>,</span>
 <span id="cb9-4"><a aria-label="4"></a>)</span>
 <span id="cb9-5"><a aria-label="5"></a><span class="fu">solve</span>(milp, algo_gpu);  <span class="co"># compile</span></span>
 <span id="cb9-6"><a aria-label="6"></a>sol_gpu, stats_gpu <span class="op">=</span> <span class="fu">solve</span>(milp, algo_gpu);</span>
@@ -571,7 +571,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>Convergence stats with termination status OPTIMAL:
 - KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02
-- time elapsed: 0.429 seconds
+- time elapsed: 0.454 seconds
 - KKT passes: 100</code></pre>
 </div>
 </div>
@@ -579,7 +579,7 @@ Guillaume Dalle, Michael Klamkin, Simeon Schaub
 <section id="jump-interface" class="slide level2">
 <h2>JuMP interface</h2>
 <div id="12" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a aria-label="1"></a>model <span class="op">=</span> JuMP.<span class="fu">read_from_file</span>(path; format <span class="op">=</span> MOI.FileFormats.FORMAT_MPS)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a aria-label="1"></a>model <span class="op">=</span> JuMP.<span class="fu">read_from_file</span>(path; format<span class="op">=</span>MOI.FileFormats.FORMAT_MPS)</span>
 <span id="cb11-2"><a aria-label="2"></a>JuMP.<span class="fu">relax_integrality</span>(model)</span>
 <span id="cb11-3"><a aria-label="3"></a>JuMP.<span class="fu">set_optimizer</span>(model, CoolPDLP.Optimizer)</span>
 <span id="cb11-4"><a aria-label="4"></a>JuMP.<span class="fu">set_silent</span>(model)</span>

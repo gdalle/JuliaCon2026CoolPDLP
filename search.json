@@ -11,14 +11,14 @@
     "href": "index.html#breakfast-optimization",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Breakfast optimization",
-    "text": "Breakfast optimization\nA bakery can produce croissants (1€) or pains au chocolat (1.5€):\n\n\n\n\nButter\nSugar\nFlour\n\n\n\n\n\nCroissant\n35g\n20g\n15g\n\n\n\nPain au chocolat\n25g\n30g\n20g\n\n\n\n\nThe ingredients have unit costs and supply limits:\n\n\n\n\nButter\nSugar\nFlour\n\n\n\n\nUnit cost\n2€/kg\n1€/kg\n0.5€/kg\n\n\nMax supply\n20kg\n100kg\n200kg\n\n\n\nHow much of each should they bake to maximize profits?"
+    "text": "Breakfast optimization\nA bakery can produce croissants (1.2€) or pains au chocolat (1.5€):\n\n\n\n\nButter\nSugar\nFlour\n\n\n\n\n\nCroissant\n35g\n20g\n15g\n\n\n\nPain au chocolat\n25g\n30g\n20g\n\n\n\n\nThe ingredients have unit costs and supply limits:\n\n\n\n\nButter\nSugar\nFlour\n\n\n\n\nUnit cost\n2€/kg\n1€/kg\n0.5€/kg\n\n\nMax supply\n19kg\n14kg\n12kg\n\n\n\nHow much of each should they bake to maximize profits?"
   },
   {
     "objectID": "index.html#mathematical-formulation",
     "href": "index.html#mathematical-formulation",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Mathematical formulation",
-    "text": "Mathematical formulation\n\n\n\nDecision variables:\n\nQuantities \\(c, p\\)\nIngredient weights \\(b, s, f\\)\n\nObjective:\n\nRevenue\nCost\n\nConstraints:\n\nMax supply\nIngredients\n\n\n\n\\[\n\\begin{align*}\n\\max_{c, p, b, s, f} \\quad & +(1c + 1.5p) \\\\\n\\phantom{\\max_{c, p, b, s, f}} & - (2b + 1s + 0.5f) \\\\\n\\text{s.t.} \\quad & 0 \\leq c, p \\\\\n& 0 \\leq b \\leq 20 \\\\\n& 0 \\leq s \\leq 100 \\\\\n\\phantom{\\max_{c, p, b, s, f}} & 0 \\leq f \\leq 200 \\\\\n& 35c + 25p = b/1000 \\\\\n& 20c + 30p = s/1000 \\\\\n& 15c + 20p = f/1000\n\\end{align*}\n\\]"
+    "text": "Mathematical formulation\n\n\n\nDecision variables:\n\nQuantities \\(c, p\\)\nIngredient weights \\(b, s, f\\)\n\nObjective:\n\nRevenue\nCost\n\nConstraints:\n\nMax supply\nIngredients\n\n\n\n\\[\n\\begin{align*}\n\\max_{c, p, b, s, f} \\quad & +(1.2c + 1.5p) \\\\\n\\phantom{\\max_{c, p, b, s, f}} & - (2b + 1s + 0.5f) \\\\\n\\text{s.t.} \\quad & 0 \\leq c, p \\\\\n& 0 \\leq b \\leq 19 \\\\\n& 0 \\leq s \\leq 14 \\\\\n\\phantom{\\max_{c, p, b, s, f}} & 0 \\leq f \\leq 12 \\\\\n& 35c + 25p = 1000b \\\\\n& 20c + 30p = 1000s \\\\\n& 15c + 20p = 1000f\n\\end{align*}\n\\]"
   },
   {
     "objectID": "index.html#linear-programming",
@@ -74,7 +74,7 @@
     "href": "index.html#set-up",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Set up",
-    "text": "Set up\nUseful imports\n\nusing CoolPDLP\nimport GPUSelect\nimport HiGHS, JuMP, MathOptInterface as MOI\nimport MathOptBenchmarkInstances as MOBI\nusing JLArrays, SparseArrays\nENV[\"DATADEPS_ALWAYS_ACCEPT\"] = true\n\n\nPrecompiling packages...\n   1240.1 ms  ✓ QuartoNotebookWorkerJSONExt (serial)\n  1 dependency successfully precompiled in 1 seconds\n\n\n\n\ntrue\n\n\nGPU environment setup\n\nbackend = if parse(Bool, get(ENV, \"CI\", \"false\"))\n    JLBackend()\nelse\n    # GPUSelect.auto_install!()\n    GPUSelect.Backend()\nend\n\nJLBackend(false)"
+    "text": "Set up\nUseful imports\n\nusing CoolPDLP\nimport GPUSelect\nimport HiGHS, JuMP, MathOptInterface as MOI\nimport MathOptBenchmarkInstances as MOBI\nusing JLArrays, SparseArrays\nENV[\"DATADEPS_ALWAYS_ACCEPT\"] = true\n\n\nPrecompiling packages...\n   1150.7 ms  ✓ QuartoNotebookWorkerJSONExt (serial)\n  1 dependency successfully precompiled in 1 seconds\n\n\n\n\ntrue\n\n\nGPU environment setup\n\nbackend = if parse(Bool, get(ENV, \"CI\", \"false\"))\n    JLBackend()\nelse\n    # GPUSelect.auto_install!()\n    GPUSelect.Backend()\nend\n\nJLBackend(false)"
   },
   {
     "objectID": "index.html#setting-up-a-problem",
@@ -88,21 +88,21 @@
     "href": "index.html#solving-on-the-cpu",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Solving on the CPU",
-    "text": "Solving on the CPU\n\nalgo = PDLP(\n    Float32, Int32, SparseMatrixCSC;\n    termination_reltol=1.0f-1, time_limit=30.0,\n)\nsolve(milp, algo);  # compile\nsol, stats = solve(milp, algo);\nstats\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02\n- time elapsed: 0.004 seconds\n- KKT passes: 100"
+    "text": "Solving on the CPU\n\nalgo = PDLP(\n    Float32, Int32, SparseMatrixCSC;\n    termination_reltol = 1.0f-1, time_limit = 30.0,\n)\nsolve(milp, algo);  # compile\nsol, stats = solve(milp, algo);\nstats\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02\n- time elapsed: 0.006 seconds\n- KKT passes: 100"
   },
   {
     "objectID": "index.html#solving-on-the-gpu",
     "href": "index.html#solving-on-the-gpu",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "Solving on the GPU",
-    "text": "Solving on the GPU\n\nalgo_gpu = PDLP(\n    Float32, Int32, GPUSparseMatrixCOO; backend,\n    termination_reltol=1.0f-1, time_limit=30.0,\n)\nsolve(milp, algo_gpu);  # compile\nsol_gpu, stats_gpu = solve(milp, algo_gpu);\nstats_gpu\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02\n- time elapsed: 0.429 seconds\n- KKT passes: 100"
+    "text": "Solving on the GPU\n\nalgo_gpu = PDLP(\n    Float32, Int32, GPUSparseMatrixCOO; backend,\n    termination_reltol = 1.0f-1, time_limit = 30.0,\n)\nsolve(milp, algo_gpu);  # compile\nsol_gpu, stats_gpu = solve(milp, algo_gpu);\nstats_gpu\n\nConvergence stats with termination status OPTIMAL:\n- KKT relative errors: primal 2.036e-02, dual 4.446e-02, gap 3.684e-02\n- time elapsed: 0.454 seconds\n- KKT passes: 100"
   },
   {
     "objectID": "index.html#jump-interface",
     "href": "index.html#jump-interface",
     "title": "Hardware-agnostic linear programming on the GPU",
     "section": "JuMP interface",
-    "text": "JuMP interface\n\nmodel = JuMP.read_from_file(path; format = MOI.FileFormats.FORMAT_MPS)\nJuMP.relax_integrality(model)\nJuMP.set_optimizer(model, CoolPDLP.Optimizer)\nJuMP.set_silent(model)\nJuMP.set_attribute(model, \"float_type\", Float32)\nJuMP.set_attribute(model, \"int_type\", Int32)\nJuMP.set_attribute(model, \"matrix_type\", GPUSparseMatrixCOO)\nJuMP.set_attribute(model, \"backend\", backend)\nJuMP.set_attribute(model, \"termination_reltol\", 1.0e-1)\nJuMP.set_attribute(model, \"time_limit\", 30.0)\nJuMP.optimize!(model)\nJuMP.is_solved_and_feasible(model)\n\n\n┌ Warning: Got mismatched float type: solving in Float32 but returning the solution in Float64.\n└ @ CoolPDLP ~/.julia/packages/CoolPDLP/fN3I2/src/MOI_wrapper.jl:225\n\n\n\n\ntrue"
+    "text": "JuMP interface\n\nmodel = JuMP.read_from_file(path; format=MOI.FileFormats.FORMAT_MPS)\nJuMP.relax_integrality(model)\nJuMP.set_optimizer(model, CoolPDLP.Optimizer)\nJuMP.set_silent(model)\nJuMP.set_attribute(model, \"float_type\", Float32)\nJuMP.set_attribute(model, \"int_type\", Int32)\nJuMP.set_attribute(model, \"matrix_type\", GPUSparseMatrixCOO)\nJuMP.set_attribute(model, \"backend\", backend)\nJuMP.set_attribute(model, \"termination_reltol\", 1.0e-1)\nJuMP.set_attribute(model, \"time_limit\", 30.0)\nJuMP.optimize!(model)\nJuMP.is_solved_and_feasible(model)\n\n\n┌ Warning: Got mismatched float type: solving in Float32 but returning the solution in Float64.\n└ @ CoolPDLP ~/.julia/packages/CoolPDLP/fN3I2/src/MOI_wrapper.jl:225\n\n\n\n\ntrue"
   },
   {
     "objectID": "index.html#perspectives",
