@@ -33,7 +33,7 @@ bibliography: CoolPDLP.bib
 
 ## Breakfast optimization
 
-A bakery can produce _croissants_ (1€) or _pains au chocolat_ (1.5€):
+A bakery can produce _croissants_ (1.2€) or _pains au chocolat_ (1.5€):
 
 | | Butter | Sugar | Flour |
 |---|---|---|---|---|
@@ -45,7 +45,7 @@ The ingredients have unit costs and supply limits:
 | | Butter | Sugar | Flour |
 |---|---|---|---|
 | Unit cost | 2€/kg | 1€/kg | 0.5€/kg |
-| Max supply | 20kg | 100kg | 200kg |
+| Max supply | 19kg | 14kg | 12kg |
 
 How much of each should they bake to maximize profits?
 
@@ -68,15 +68,15 @@ How much of each should they bake to maximize profits?
 ::: {.column width="60%"}
 $$
 \begin{align*}
-\max_{c, p, b, s, f} \quad & +(1c + 1.5p) \\
+\max_{c, p, b, s, f} \quad & +(1.2c + 1.5p) \\
 \phantom{\max_{c, p, b, s, f}} & - (2b + 1s + 0.5f) \\
 \text{s.t.} \quad & 0 \leq c, p \\
-& 0 \leq b \leq 20 \\
-& 0 \leq s \leq 100 \\
-\phantom{\max_{c, p, b, s, f}} & 0 \leq f \leq 200 \\
-& 35c + 25p = b/1000 \\
-& 20c + 30p = s/1000 \\
-& 15c + 20p = f/1000
+& 0 \leq b \leq 19 \\
+& 0 \leq s \leq 14 \\
+\phantom{\max_{c, p, b, s, f}} & 0 \leq f \leq 12 \\
+& 35c + 25p = 1000b \\
+& 20c + 30p = 1000s \\
+& 15c + 20p = 1000f
 \end{align*}
 $$
 :::
@@ -205,7 +205,7 @@ milp = MILP(qps; dataset, name, path)
 ```{julia}
 algo = PDLP(
     Float32, Int32, SparseMatrixCSC;
-    termination_reltol=1.0f-1, time_limit=30.0,
+    termination_reltol = 1.0f-1, time_limit = 30.0,
 )
 solve(milp, algo);  # compile
 sol, stats = solve(milp, algo);
@@ -217,7 +217,7 @@ stats
 ```{julia}
 algo_gpu = PDLP(
     Float32, Int32, GPUSparseMatrixCOO; backend,
-    termination_reltol=1.0f-1, time_limit=30.0,
+    termination_reltol = 1.0f-1, time_limit = 30.0,
 )
 solve(milp, algo_gpu);  # compile
 sol_gpu, stats_gpu = solve(milp, algo_gpu);
@@ -227,7 +227,7 @@ stats_gpu
 ## JuMP interface
 
 ```{julia}
-model = JuMP.read_from_file(path; format = MOI.FileFormats.FORMAT_MPS)
+model = JuMP.read_from_file(path; format=MOI.FileFormats.FORMAT_MPS)
 JuMP.relax_integrality(model)
 JuMP.set_optimizer(model, CoolPDLP.Optimizer)
 JuMP.set_silent(model)
