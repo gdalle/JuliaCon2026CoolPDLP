@@ -150,34 +150,43 @@ The core primitive becomes sparse matrix-matrix product (SpMM).
 
 # Package demo
 
-## Imports
+## Set up
+
+Useful imports
 
 ```{julia}
 using CoolPDLP
-using HiGHS: HiGHS
-using JLArrays
-using JuMP
-using MathOptBenchmarkInstances: Netlib, list_instances, read_instance
+import GPUSelect
+import HiGHS, JuMP, MathOptInterface as MOI
+import MathOptBenchmarkInstances as MOBI
+using SparseArrays
+```
+
+GPU environment setup
+
+```{julia}
+# GPUSelect.auto_install!()
+backend = GPUSelect.Backend()
 ```
 
 ## Setting up a problem
 
 ```{julia}
-dataset = Netlib
-name = list_instances(dataset)[1]
-qps, path = read_instance(dataset, name)
+dataset = MOBI.MIPLIB2017
+name = "neos-3402454-bohle"
+qps, path = MOBI.read_instance(dataset, name);
 milp = MILP(qps; dataset, name, path)
 ```
 
 ## Solving on the CPU
 
 ```{julia}
-algo = PDLP(;
-    termination_reltol = 1.0e-4,
-    time_limit = 30.0
+algo = PDLP(
+    Float32, Int32, SparseMatrixCSC;
+    termination_reltol=1.0f-1, time_limit=30.0,
 )
-solve(milp, algo)  # compile
-sol, stats = solve(milp, algo)
+solve(milp, algo);  # compile
+sol, stats = solve(milp, algo);
 stats
 ```
 
@@ -185,28 +194,26 @@ stats
 
 ```{julia}
 algo_gpu = PDLP(
-    Float64, Int64,
-    GPUSparseMatrixCSR;  # replace with e.g. CuSparseMatrixCSR
-    backend=JLBackend(),  # replace with e.g. CUDABackend()
-    termination_reltol=1.0f-4,
-    time_limit=30.0,
+    Float32, Int32, GPUSparseMatrixCOO; backend,
+    termination_reltol=1.0f-1, time_limit=30.0,
 )
-solve(milp, algo_gpu)  # compile
-sol_gpu, stats_gpu = solve(milp, algo_gpu)
+solve(milp, algo_gpu);  # compile
+sol_gpu, stats_gpu = solve(milp, algo_gpu);
 stats_gpu
 ```
 
 ## JuMP interface
 
 ```{julia}
-model = JuMP.read_from_file(path; format=MOI.FileFormats.FORMAT_MPS)
+model = JuMP.read_from_file(path; format = MOI.FileFormats.FORMAT_MPS)
 JuMP.set_optimizer(model, CoolPDLP.Optimizer)
 JuMP.set_silent(model)
 JuMP.set_attribute(model, "matrix_type", GPUSparseMatrixCSR)
 JuMP.set_attribute(model, "backend", JLBackend())
-JuMP.set_attribute(model, "termination_reltol", 1.0e-4)
+JuMP.set_attribute(model, "termination_reltol", 1.0f-1)
 JuMP.set_attribute(model, "time_limit", 30.0)
 JuMP.optimize!(model)
+JuMP.is_solved_and_feasible(model)
 ```
 
 # Conclusion

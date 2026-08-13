@@ -20,6 +20,9 @@ jobs:
       - name: Instantiate Julia environment
         run: julia --project=. --color=yes -e 'using Pkg; Pkg.instantiate()'
 
+      - name: Add GPU backend
+        run: julia --project=. --color=yes -e 'using GPUSelect; GPUSelect.auto_install!()'
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
